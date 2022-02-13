@@ -1,0 +1,11 @@
+# env
+.env
+
+# data
+data/*
+
+# docs
+docs/*
+
+# volumes
+volumes/*

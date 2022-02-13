@@ -1,0 +1,62 @@
+# simple docker-compose.yml file for nats, redis, postgres and minio
+version: '3'
+services:
+  # nats service
+  natsapp:
+    image: nats:2.6.6-alpine3.14
+    networks:
+      - alyafnnet
+    ports:
+      - "4222:4222"
+      - "6222:6222"
+      - "8222:8222"
+    volumes:
+      - ./volumes/nats:/data
+    restart: always
+  # redis service
+  redisapp:
+    image: redis:6.2.6-alpine3.15
+    networks:
+      - alyafnnet
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./volumes/redis:/data
+    restart: always
+  # postgresql service
+  postgresqlapp:
+    image: postgres:9.6.24-alpine3.15
+    networks:
+      - alyafnnet
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./volumes/postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=alyafnuser
+      - POSTGRES_PASSWORD=alyafnuserpassword
+      - POSTGRES_DB=alyagofndev
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    restart: always
+  # minio s3 service
+  minioapp:
+    image: rancher/minio-minio:RELEASE.2020-07-13T18-09-56Z
+    networks:
+      - alyafnnet
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./volumes/minio:/data
+    environment:
+      - MINIO_ACCESS_KEY=minio
+      - MINIO_SECRET_KEY=minio123
+      - MINIO_BROWSER=on
+    restart: always
+    # pass server /data to minio
+    command: server /data
+  
+# network: alyafnnet
+networks:
+  alyafnnet:
+    name: alyafnnet
+    driver: bridge
